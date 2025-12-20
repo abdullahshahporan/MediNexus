@@ -1,82 +1,159 @@
 # MediNexus
 
-A Flutter healthcare application with Supabase backend.
+MediNexus is a Flutter-based healthcare app concept with **role-based access** (Patient / Doctor), a modern glassmorphism UI, and an onboarding flow that routes users to the correct dashboard after authentication.
 
-## Setup Instructions
+> Built with Flutter (Android/iOS ready) and structured for scalable feature development.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/AsifJawad15/MediNexus.git
-   cd MediNexus
-   ```
+---
 
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
+## Features
 
-3. **Configure environment variables**
-   - Copy `.env.example` to `.env`
-   ```bash
-   copy .env.example .env
-   ```
-   - Open `.env` and add your API keys:
-     - `SUPABASE_URL`: Your Supabase project URL
-     - `SUPABASE_ANON_KEY`: Your Supabase anon/public key
-     - Add other API keys as needed (OpenAI, Gemini, etc.)
+- **Role-based flow**
+  - Select role (Patient / Doctor)
+  - Route to the correct dashboard after sign-in
+- **Animated splash screen**
+  - Logo animation + timed transition
+- **Patient dashboard**
+  - Tab-based navigation: **Home**, **Appointments**, **Health Track**, **Profile**
+- **Authentication**
+  - Email/password sign-in (Supabase-ready)
+- **Localization toggle**
+  - Language switch UI (EN + extensible)
+- **Modern UI**
+  - Glass effect cards, polished navigation bar, dark theme-friendly design
 
-4. **Create the test table in Supabase** (for testing connection)
-   - Go to your Supabase SQL Editor
-   - Run the SQL commands in `test_table.sql`
+---
 
-5. **Run the app**
-   ```bash
-   flutter run
-   ```
+## Tech Stack
 
-## Environment Variables
+- **Flutter / Dart**
+- **State Management:** Provider
+- **Backend/Auth:** Supabase (recommended)
+- **Android:** Gradle (JDK 17 compatible)
 
-This project uses environment variables to keep sensitive API keys secure. **Never commit the `.env` file to version control.**
+---
 
-Required variables:
-- `SUPABASE_URL` - Your Supabase project URL
-- `SUPABASE_ANON_KEY` - Your Supabase anonymous key
+## Project Structure (high level)
 
-Optional (add as needed):
-- `OPENAI_API_KEY` - For OpenAI integration
-- `GEMINI_API_KEY` - For Google Gemini integration
-- `ANTHROPIC_API_KEY` - For Anthropic Claude integration
-- `GOOGLE_MAPS_API_KEY` - For Google Maps integration
-
-## Project Structure
-
-```
+```text
 lib/
-├── config/
-│   └── supabase_config.dart   # Configuration for Supabase
-├── pages/
-│   └── test_connection_page.dart  # Test page for database connection
-└── main.dart                   # App entry point
+  core/                 # theme, colors, utilities
+  pages/
+    patient/
+      patient_dashboard_page.dart
+      tabs/
+        home_tab.dart
+        appointments_tab.dart
+        health_track_tab.dart
+        profile_tab.dart
+  providers/             # auth + language providers
+  splash_screen.dart     # animated splash screen
 ```
 
-## Testing Database Connection
+---
 
-The app includes a test page to verify your Supabase connection:
-- Insert test messages
-- View all messages from database
-- Delete messages
-- Check connection status
+## Getting Started
 
-## Security Notes
+### Prerequisites
+- Flutter SDK installed
+- Android Studio / VS Code
+- **JDK 17** (required for modern Android Gradle Plugin)
+- A Supabase project (if using Supabase auth)
 
-- The `.env` file is excluded from git via `.gitignore`
-- Never share your API keys publicly
-- Use `.env.example` as a template for other developers
-- The Supabase anon key is safe to use in client-side apps (protected by RLS policies)
+### Install & Run
+```bash
+flutter pub get
+flutter run
+```
+
+### Build APK (Release)
+```bash
+flutter clean
+flutter pub get
+flutter build apk --release
+```
+
+APK output:
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+---
+
+## Supabase Configuration
+
+If you use Supabase for authentication:
+1. Create a Supabase project
+2. Get:
+   - **Project URL**
+   - **Anon public key**
+3. Add them to your app configuration (commonly via one of these patterns):
+   - `--dart-define` values
+   - `.env` file (with flutter_dotenv)
+   - a constants/config file in `lib/`
+
+> If you tell me where your Supabase URL/key are stored in this repo, I can tailor this section exactly to your structure.
+
+---
+
+## Android Notes (Important)
+
+### Internet on Physical Devices
+If sign-in works on emulator but fails on a real phone, ensure **INTERNET permission** exists in:
+
+`android/app/src/main/AndroidManifest.xml`
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
+
+---
+
+## Screenshots
+
+Add screenshots to `assets/` (or a `docs/` folder) and link them here:
+
+- Splash
+- Role selection
+- Sign in
+- Patient dashboard (Home / Appointments / Health / Profile)
+
+Example:
+```md
+![Patient Dashboard](docs/screenshots/patient_dashboard.png)
+```
+
+---
+
+## Roadmap (suggested)
+
+- Doctor dashboard + patient management
+- Appointment booking flow (search doctors, slots, payments)
+- Health tracking (metrics, reminders, export)
+- Push notifications (reminders, appointment updates)
+- Unit + widget tests and CI
+
+---
 
 ## Contributing
 
-1. Copy `.env.example` to `.env` and add your credentials
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
+Contributions are welcome:
+1. Fork the repo
+2. Create a feature branch
+3. Commit changes
+4. Open a Pull Request
+
+---
+
+## License
+
+Add a license (MIT/Apache-2.0/etc). Example:
+- MIT License
+
+---
+
+## Author
+
+**Asif Jawad**
+
+**Abdullah Md. Shahporan**
