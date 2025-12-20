@@ -1,14 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/models.dart';
+import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
 import '../services/auth_service.dart';
+import 'doctor/doctor_dashboard_page.dart';
 import 'intro_page.dart';
+import 'patient/patient_dashboard_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final String role;
   
   const HomePage({super.key, required this.role});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Navigate to appropriate dashboard after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _navigateToDashboard();
+      }
+    });
+  }
+
+  void _navigateToDashboard() {
+    final authProvider = context.read<AuthProvider>();
+    final userRole = authProvider.profile?.role;
+
+    Widget dashboard;
+    if (userRole == UserRole.doctor || widget.role.toLowerCase() == 'doctor') {
+      dashboard = const DoctorDashboardPage();
+    } else {
+      dashboard = const PatientDashboardPage();
+    }
+
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => dashboard,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,173 +67,175 @@ class HomePage extends StatelessWidget {
           body: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF0A0A0A),
-                  Color(0xFF1A1A1A),
-                  Color(0xFF0A0A0A),
-                ],
+                colors: widget.role.toLowerCase() == 'doctor'
+                    ? [
+                        const Color(0xFF0A0E27),
+                        const Color(0xFF1A1F3A),
+                        const Color(0xFF0A0E27),
+                      ]
+                    : [
+                        const Color(0xFF0A1F1A),
+                        const Color(0xFF1A3A2A),
+                        const Color(0xFF0A1F1A),
+                      ],
               ),
             ),
             child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    // Header
-                    _buildGlassContainer(
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Animated Icon with glow
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 800),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: 0.5 + (value * 0.5),
+                            child: Opacity(
+                              opacity: value,
+                              child: Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: widget.role.toLowerCase() == 'doctor'
+                                        ? [
+                                            const Color(0xFF3B82F6),
+                                            const Color(0xFF2563EB),
+                                          ]
+                                        : [
+                                            const Color(0xFF10B981),
+                                            const Color(0xFF059669),
+                                          ],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: (widget.role.toLowerCase() == 'doctor'
+                                              ? const Color(0xFF3B82F6)
+                                              : const Color(0xFF10B981))
+                                          .withOpacity(0.5 * value),
+                                      blurRadius: 40,
+                                      spreadRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  _getRoleIcon(widget.role),
+                                  size: 60,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            child: Icon(
-                              _getRoleIcon(role),
-                              size: 32,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 40),
+
+                      // Welcome Text with fade animation
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 600),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   langProvider.translate('welcome'),
                                   style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white.withOpacity(0.6),
+                                    fontSize: 16,
+                                    color: Colors.white.withOpacity(0.7),
+                                    letterSpacing: 1,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 8),
                                 Text(
                                   userName,
-                                  style: TextStyle(
-                                    fontSize: 20,
+                                  style: const TextStyle(
+                                    fontSize: 32,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white.withOpacity(0.95),
+                                    color: Colors.white,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.verified_user_rounded,
+                                        color: Colors.white.withOpacity(0.9),
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        langProvider.translate(widget.role),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white.withOpacity(0.9),
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () => _showLogoutDialog(context, langProvider),
-                            icon: Icon(
-                              Icons.logout_rounded,
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    
-                    // Role Badge
-                    _buildGlassContainer(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.verified_user_rounded,
-                            color: Colors.white.withOpacity(0.8),
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${langProvider.translate('logged_in_as')} ${langProvider.translate(role)}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    
-                    // Success Message
-                    Expanded(
-                      child: Center(
-                        child: _buildGlassContainer(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline_rounded,
-                                size: 80,
-                                color: Colors.green.withOpacity(0.8),
-                              ),
-                              const SizedBox(height: 24),
-                              Text(
-                                langProvider.translate('auth_success'),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white.withOpacity(0.95),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                langProvider.translate('logged_into'),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white.withOpacity(0.6),
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              Text(
-                                'User ID: ${user?.id ?? 'N/A'}',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white.withOpacity(0.4),
-                                  fontFamily: 'monospace',
-                                ),
-                              ),
-                            ],
+                      const SizedBox(height: 40),
+
+                      // Loading indicator
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            widget.role.toLowerCase() == 'doctor'
+                                ? const Color(0xFF3B82F6)
+                                : const Color(0xFF10B981),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      Text(
+                        'Loading your dashboard...',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildGlassContainer({required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 
@@ -199,63 +247,5 @@ class HomePage extends StatelessWidget {
       default:
         return Icons.person_outline_rounded;
     }
-  }
-
-  void _showLogoutDialog(BuildContext context, LanguageProvider langProvider) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: Colors.white.withOpacity(0.1),
-            width: 1.5,
-          ),
-        ),
-        title: Text(
-          langProvider.translate('sign_out'),
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.95),
-          ),
-        ),
-        content: Text(
-          langProvider.translate('sign_out_confirm'),
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              langProvider.translate('cancel'),
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await AuthService.signOut();
-              if (context.mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const IntroPage(),
-                  ),
-                  (route) => false,
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.withOpacity(0.2),
-              foregroundColor: Colors.red.withOpacity(0.9),
-            ),
-            child: Text(langProvider.translate('sign_out')),
-          ),
-        ],
-      ),
-    );
   }
 }

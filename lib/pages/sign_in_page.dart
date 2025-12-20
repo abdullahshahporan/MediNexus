@@ -160,33 +160,33 @@ class _SignInPageState extends State<SignInPage> {
                                     decoration: InputDecoration(
                                       hintText: langProvider.translate('enter_email'),
                                       hintStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.3),
+                                        color: Colors.white.withOpacity(0.6),
                                       ),
                                       prefixIcon: Icon(
                                         Icons.email_outlined,
-                                        color: Colors.white.withOpacity(0.5),
+                                        color: Colors.white.withOpacity(0.8),
                                       ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: Colors.white.withOpacity(0.3),
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: Colors.white.withOpacity(0.3),
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.white.withOpacity(0.3),
+                                          color: Colors.white.withOpacity(0.6),
                                           width: 2,
                                         ),
                                       ),
                                       filled: true,
-                                      fillColor: Colors.white.withOpacity(0.05),
+                                      fillColor: Colors.white.withOpacity(0.08),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -227,11 +227,11 @@ class _SignInPageState extends State<SignInPage> {
                                     decoration: InputDecoration(
                                       hintText: langProvider.translate('enter_password'),
                                       hintStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.3),
+                                        color: Colors.white.withOpacity(0.6),
                                       ),
                                       prefixIcon: Icon(
                                         Icons.lock_outline_rounded,
-                                        color: Colors.white.withOpacity(0.5),
+                                        color: Colors.white.withOpacity(0.8),
                                       ),
                                       suffixIcon: IconButton(
                                         onPressed: () {
@@ -243,30 +243,30 @@ class _SignInPageState extends State<SignInPage> {
                                           _obscurePassword
                                               ? Icons.visibility_off_outlined
                                               : Icons.visibility_outlined,
-                                          color: Colors.white.withOpacity(0.5),
+                                          color: Colors.white.withOpacity(0.8),
                                         ),
                                       ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: Colors.white.withOpacity(0.3),
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.white.withOpacity(0.1),
+                                          color: Colors.white.withOpacity(0.3),
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide(
-                                          color: Colors.white.withOpacity(0.3),
+                                          color: Colors.white.withOpacity(0.6),
                                           width: 2,
                                         ),
                                       ),
                                       filled: true,
-                                      fillColor: Colors.white.withOpacity(0.05),
+                                      fillColor: Colors.white.withOpacity(0.08),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -293,7 +293,7 @@ class _SignInPageState extends State<SignInPage> {
                                 child: Text(
                                   langProvider.translate('forgot_password'),
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.6),
+                                    color: Colors.white.withOpacity(0.85),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -316,7 +316,7 @@ class _SignInPageState extends State<SignInPage> {
                               children: [
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: Colors.white.withOpacity(0.3),
                                     thickness: 1,
                                   ),
                                 ),
@@ -325,7 +325,7 @@ class _SignInPageState extends State<SignInPage> {
                                   child: Text(
                                     langProvider.translate('or'),
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.4),
+                                      color: Colors.white.withOpacity(0.7),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -348,7 +348,7 @@ class _SignInPageState extends State<SignInPage> {
                                   Text(
                                     langProvider.translate('no_account'),
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.6),
+                                      color: Colors.white.withOpacity(0.85),
                                       fontSize: 14,
                                     ),
                                   ),
@@ -428,10 +428,10 @@ class _SignInPageState extends State<SignInPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withOpacity(0.2),
           width: 1.5,
         ),
         boxShadow: [
@@ -458,8 +458,8 @@ class _SignInPageState extends State<SignInPage> {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: isPrimary
-              ? Colors.white.withOpacity(0.15)
-              : Colors.white.withOpacity(0.05),
+              ? Colors.white.withOpacity(0.2)
+              : Colors.white.withOpacity(0.08),
           foregroundColor: Colors.white.withOpacity(0.95),
           disabledBackgroundColor: Colors.white.withOpacity(0.05),
           disabledForegroundColor: Colors.white.withOpacity(0.3),

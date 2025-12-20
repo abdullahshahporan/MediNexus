@@ -13,6 +13,7 @@ import 'pages/patient/patient_dashboard_page.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
 import 'providers/theme_provider.dart';
+import 'splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,7 +72,9 @@ class MediNexusApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            home: const AppInitializer(),
+            home: SplashScreen(
+              nextScreen: const AppInitializer(),
+            ),
           );
         },
       ),
@@ -88,34 +91,8 @@ class AppInitializer extends StatefulWidget {
 }
 
 class _AppInitializerState extends State<AppInitializer> {
-  bool _isInitializing = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeApp();
-  }
-
-  Future<void> _initializeApp() async {
-    // Wait for auth provider to initialize
-    final authProvider = context.read<AuthProvider>();
-    
-    // Wait until the auth provider is initialized
-    while (!authProvider.isInitialized) {
-      await Future.delayed(const Duration(milliseconds: 50));
-    }
-
-    if (mounted) {
-      setState(() => _isInitializing = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isInitializing) {
-      return const _SplashScreen();
-    }
-
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         if (authProvider.isAuthenticated) {
@@ -128,95 +105,6 @@ class _AppInitializerState extends State<AppInitializer> {
         }
         return const IntroPage();
       },
-    );
-  }
-}
-
-/// Splash screen shown during app initialization
-class _SplashScreen extends StatelessWidget {
-  const _SplashScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [const Color(0xFF0A0A0A), const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)]
-                : [const Color(0xFFF8FAFC), const Color(0xFFFFFFFF), const Color(0xFFF8FAFC)],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // App Logo
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF10B981), Color(0xFF059669)],
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF10B981).withOpacity(0.3),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.health_and_safety_rounded,
-                  size: 50,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 24),
-              
-              // App Name
-              Text(
-                'MediNexus',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Colors.black87,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              
-              Text(
-                'Healthcare at Your Fingertips',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDark ? Colors.white60 : Colors.black45,
-                ),
-              ),
-              const SizedBox(height: 48),
-              
-              // Loading indicator
-              SizedBox(
-                width: 32,
-                height: 32,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  color: const Color(0xFF10B981),
-                  backgroundColor: isDark ? Colors.white12 : Colors.black12,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
