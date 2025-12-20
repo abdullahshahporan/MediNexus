@@ -42,88 +42,56 @@ class _IntroPageState extends State<IntroPage> {
                     child: _buildLanguageToggle(langProvider),
                   ),
                   
-                  // Main Content
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 20),
-                        // Logo/Title
-                        _buildGlassContainer(
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.medical_services_rounded,
-                                size: 80,
+                  // Main Content - Centered
+                  Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: _buildGlassContainer(
+                        child: Column(
+                          children: [
+                            // Select Role Text
+                            Text(
+                              langProvider.translate('select_role'),
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.white.withOpacity(0.9),
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                langProvider.translate('app_title'),
-                                style: TextStyle(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white.withOpacity(0.95),
-                                  letterSpacing: 1.2,
-                                ),
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            // Role Selection Cards
+                            _buildRoleCard(
+                              context: context,
+                              langProvider: langProvider,
+                              icon: Icons.person_outline_rounded,
+                              title: langProvider.translate('patient'),
+                              description: langProvider.translate('patient_desc'),
+                              role: 'patient',
+                            ),
+                            const SizedBox(height: 16),
+                            _buildRoleCard(
+                              context: context,
+                              langProvider: langProvider,
+                              icon: Icons.medical_information_outlined,
+                              title: langProvider.translate('doctor'),
+                              description: langProvider.translate('doctor_desc'),
+                              role: 'doctor',
+                            ),
+                            
+                            const SizedBox(height: 48),
+                            
+                            Text(
+                              langProvider.translate('terms_privacy'),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white.withOpacity(0.4),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                langProvider.translate('app_subtitle'),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white.withOpacity(0.6),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 48),
-                        
-                        // Select Role Text
-                        Text(
-                          langProvider.translate('select_role'),
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white.withOpacity(0.9),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        
-                        // Role Selection Cards
-                        _buildRoleCard(
-                          context: context,
-                          langProvider: langProvider,
-                          icon: Icons.person_outline_rounded,
-                          title: langProvider.translate('patient'),
-                          description: langProvider.translate('patient_desc'),
-                          role: 'patient',
-                        ),
-                        const SizedBox(height: 16),
-                        _buildRoleCard(
-                          context: context,
-                          langProvider: langProvider,
-                          icon: Icons.medical_information_outlined,
-                          title: langProvider.translate('doctor'),
-                          description: langProvider.translate('doctor_desc'),
-                          role: 'doctor',
-                        ),
-                        
-                        const SizedBox(height: 48),
-                        
-                        Text(
-                          langProvider.translate('terms_privacy'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.4),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
