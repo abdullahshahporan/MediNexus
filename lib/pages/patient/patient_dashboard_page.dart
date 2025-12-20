@@ -6,9 +6,10 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
-import 'tabs/appointments_tab.dart';
-import 'tabs/health_track_tab.dart';
 import 'tabs/home_tab.dart';
+import 'tabs/appointments_tab.dart';
+import 'tabs/tracking_status/medicine_tracking_tab.dart';
+import 'tabs/tracking_status/combined_records_tab.dart';
 import 'tabs/profile_tab.dart';
 
 /// Patient Dashboard - Main home screen for patients
@@ -36,9 +37,15 @@ class _PatientDashboardPageState extends State<PatientDashboardPage> {
         child: IndexedStack(
           index: _selectedNavIndex,
           children: [
-            HomeTab(isDark: isDark, auth: auth, lang: lang),
+            HomeTab(
+              isDark: isDark,
+              auth: auth,
+              lang: lang,
+              onProfileTap: () => setState(() => _selectedNavIndex = 4),
+            ),
             AppointmentsTab(isDark: isDark),
-            HealthTrackTab(isDark: isDark),
+            MedicineTrackingTab(isDark: isDark),
+            CombinedRecordsTab(isDark: isDark),
             ProfileTab(isDark: isDark, auth: auth),
           ],
         ),
@@ -49,13 +56,13 @@ class _PatientDashboardPageState extends State<PatientDashboardPage> {
 
   Widget _buildBottomNav(bool isDark) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      height: 70,
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      height: 80,
       decoration: BoxDecoration(
         color: isDark
             ? Colors.black.withOpacity(0.7)
             : Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(0),
         border: Border.all(
           color: isDark
               ? Colors.white.withOpacity(0.1)
@@ -78,7 +85,7 @@ class _PatientDashboardPageState extends State<PatientDashboardPage> {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(0),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Container(
@@ -106,27 +113,31 @@ class _PatientDashboardPageState extends State<PatientDashboardPage> {
                   isSelected: _selectedNavIndex == 0,
                   onTap: () => setState(() => _selectedNavIndex = 0),
                   color: AppColors.patientAccent,
+                  isDark: isDark,
                 ),
                 _NavItem(
                   icon: Icons.calendar_today_rounded,
-                  label: 'Appointments',
+                  label: 'Appointment',
                   isSelected: _selectedNavIndex == 1,
                   onTap: () => setState(() => _selectedNavIndex = 1),
                   color: AppColors.patientAccent,
+                  isDark: isDark,
                 ),
                 _NavItem(
-                  icon: Icons.health_and_safety_sharp,
-                  label: 'Health',
+                  icon: Icons.medication_outlined,
+                  label: 'Medicine',
                   isSelected: _selectedNavIndex == 2,
                   onTap: () => setState(() => _selectedNavIndex = 2),
                   color: AppColors.patientAccent,
+                  isDark: isDark,
                 ),
                 _NavItem(
-                  icon: Icons.person_rounded,
-                  label: 'Profile',
+                  icon: Icons.folder_rounded,
+                  label: 'Records',
                   isSelected: _selectedNavIndex == 3,
                   onTap: () => setState(() => _selectedNavIndex = 3),
                   color: AppColors.patientAccent,
+                  isDark: isDark,
                 ),
               ],
             ),
@@ -143,6 +154,7 @@ class _NavItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final Color color;
+  final bool isDark;
 
   const _NavItem({
     required this.icon,
@@ -150,50 +162,47 @@ class _NavItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     required this.color,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return GestureDetector(
-      onTap: onTap,
-      child: TweenAnimationBuilder<double>(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        tween: Tween(begin: 0.0, end: isSelected ? 1.0 : 0.0),
-        builder: (context, value, child) {
-          return Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? color.withOpacity(0.2)
-                  : Colors.transparent,
-              shape: BoxShape.circle,
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: color.withOpacity(0.4 * value),
-                        blurRadius: 12 * value,
-                        spreadRadius: 2 * value,
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Center(
-              child: Icon(
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
                 icon,
                 color: isSelected
                     ? color
                     : (isDark
-                        ? Colors.white.withOpacity(0.6)
-                        : Colors.black.withOpacity(0.5)),
-                size: 28,
+                          ? Colors.white.withOpacity(0.5)
+                          : Colors.black.withOpacity(0.4)),
+                size: 26,
               ),
-            ),
-          );
-        },
+              const SizedBox(height: 4),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isSelected
+                      ? color
+                      : (isDark
+                            ? Colors.white.withOpacity(0.5)
+                            : Colors.black.withOpacity(0.4)),
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
