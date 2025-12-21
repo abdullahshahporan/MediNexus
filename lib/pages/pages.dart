@@ -6,6 +6,10 @@ export 'auth/auth.dart';
 // Feature Pages
 export 'chat/chat.dart';
 export 'doctor/doctor_dashboard_page.dart';
+export 'doctor/doctor_login_page.dart';
+export 'doctor/patient_detail_page.dart';
+export 'doctor/tabs/collab_tab.dart';
+export 'doctor/tabs/tools_tab.dart';
 export 'find_doctor/find_doctor.dart';
 export 'home_page.dart';
 // Other Pages

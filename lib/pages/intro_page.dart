@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/language_provider.dart';
 import '../utils/page_transitions.dart';
+import 'doctor/doctor_login_page.dart';
 import 'sign_in_page.dart';
 
 class IntroPage extends StatefulWidget {
@@ -171,13 +172,22 @@ class _IntroPageState extends State<IntroPage> {
   }) {
     return GestureDetector(
       onTap: () {
-        // Navigate directly to sign-in page with smooth transition
-        Navigator.push(
-          context,
-          SlideRightRoute(
-            page: SignInPage(role: role),
-          ),
-        );
+        // Navigate to doctor login for doctor role, sign-in for patient
+        if (role == 'doctor') {
+          Navigator.push(
+            context,
+            SlideRightRoute(
+              page: const DoctorLoginPage(),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            SlideRightRoute(
+              page: SignInPage(role: role),
+            ),
+          );
+        }
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),

@@ -7,6 +7,9 @@ import '../../core/widgets/glass_button.dart';
 import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/status_widgets.dart';
 import '../../providers/auth_provider.dart';
+import 'patient_detail_page.dart';
+import 'tabs/collab_tab.dart';
+import 'tabs/tools_tab.dart';
 
 /// Doctor Dashboard - Main home screen for doctors
 class DoctorDashboardPage extends StatefulWidget {
@@ -33,6 +36,8 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
             _DashboardTab(isDark: isDark, auth: auth),
             _ScheduleTab(isDark: isDark),
             _PatientsTab(isDark: isDark),
+            ToolsTab(isDark: isDark),
+            CollabTab(isDark: isDark),
             _ProfileTab(isDark: isDark, auth: auth),
           ],
         ),
@@ -62,8 +67,9 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
         ],
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -89,10 +95,24 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
                 color: AppColors.doctorAccent,
               ),
               _NavItem(
-                icon: Icons.person_rounded,
-                label: 'Profile',
+                icon: Icons.medical_services_rounded,
+                label: 'Tools',
                 isSelected: _selectedNavIndex == 3,
                 onTap: () => setState(() => _selectedNavIndex = 3),
+                color: AppColors.doctorAccent,
+              ),
+              _NavItem(
+                icon: Icons.forum_rounded,
+                label: 'Collab',
+                isSelected: _selectedNavIndex == 4,
+                onTap: () => setState(() => _selectedNavIndex = 4),
+                color: AppColors.doctorAccent,
+              ),
+              _NavItem(
+                icon: Icons.person_rounded,
+                label: 'Profile',
+                isSelected: _selectedNavIndex == 5,
+                onTap: () => setState(() => _selectedNavIndex = 5),
                 color: AppColors.doctorAccent,
               ),
             ],
@@ -304,7 +324,7 @@ class _DashboardTab extends StatelessWidget {
                       Switch(
                         value: doctorProfile?.isOnline ?? false,
                         onChanged: (value) => auth.toggleOnlineStatus(),
-                        activeColor: AppColors.success,
+                        activeThumbColor: AppColors.success,
                       ),
                     ],
                   ),
@@ -931,14 +951,29 @@ class _PatientsTab extends StatelessWidget {
           sliver: SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
+                final name = index == 0 ? 'Ahmed Hassan' : 'Fatima Begum';
+                final age = index == 0 ? 45 : 32;
+                final patientId = index == 0 ? 'P1001' : 'P1002';
+                
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _PatientCard(
-                    name: index == 0 ? 'Ahmed Hassan' : 'Fatima Begum',
-                    age: index == 0 ? 45 : 32,
+                    name: name,
+                    age: age,
                     lastVisit: index == 0 ? 'Today' : '2 days ago',
                     condition: index == 0 ? 'Hypertension' : 'Diabetes',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PatientDetailPage(
+                            patientName: name,
+                            patientAge: age,
+                            patientId: patientId,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
@@ -1131,7 +1166,7 @@ class _ProfileTab extends StatelessWidget {
                     Icon(Icons.star_rounded, color: AppColors.warning, size: 20),
                     const SizedBox(width: 4),
                     Text(
-                      '${doctorProfile?.rating.toStringAsFixed(1) ?? '0.0'}',
+                      doctorProfile?.rating.toStringAsFixed(1) ?? '0.0',
                       style: TextStyle(
                         color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
                         fontSize: 16,
