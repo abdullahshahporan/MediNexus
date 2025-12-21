@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/models.dart';
+import '../providers/auth_provider.dart';
 import '../providers/language_provider.dart';
-import '../services/auth_service.dart';
 import '../utils/page_transitions.dart';
-import 'home_page.dart';
+import 'doctor/doctor_dashboard_page.dart';
+import 'patient/patient_dashboard_page.dart';
 import 'sign_up_page.dart';
 
 class SignInPage extends StatefulWidget {
   final String role;
-  
+
   const SignInPage({super.key, required this.role});
 
   @override
@@ -35,7 +37,8 @@ class _SignInPageState extends State<SignInPage> {
 
     setState(() => _isLoading = true);
 
-    final result = await AuthService.signIn(
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.signIn(
       email: _emailController.text.trim(),
       password: _passwordController.text,
     );
@@ -43,17 +46,27 @@ class _SignInPageState extends State<SignInPage> {
     setState(() => _isLoading = false);
 
     if (mounted) {
-      if (result['success']) {
-        Navigator.pushReplacement(
-          context,
-          SlideRightRoute(
-            page: HomePage(role: widget.role),
-          ),
-        );
+      if (success) {
+        // Determine which dashboard to navigate to based on user role
+        final userRole = authProvider.profile?.role;
+        Widget dashboard;
+
+        if (userRole == UserRole.doctor) {
+          dashboard = const DoctorDashboardPage();
+        } else if (userRole == UserRole.patient) {
+          dashboard = const PatientDashboardPage();
+        } else {
+          // Fallback based on role selected during sign in
+          dashboard = widget.role.toLowerCase() == 'doctor'
+              ? const DoctorDashboardPage()
+              : const PatientDashboardPage();
+        }
+
+        Navigator.pushReplacement(context, SlideRightRoute(page: dashboard));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Sign in failed'),
+            content: Text(authProvider.error ?? 'Sign in failed'),
             backgroundColor: Colors.red.withOpacity(0.8),
           ),
         );
@@ -100,7 +113,7 @@ class _SignInPageState extends State<SignInPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Scrollable content
                   Expanded(
                     child: SingleChildScrollView(
@@ -135,7 +148,7 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                             const SizedBox(height: 32),
-                            
+
                             // Email Field
                             _buildGlassContainer(
                               child: Column(
@@ -158,7 +171,9 @@ class _SignInPageState extends State<SignInPage> {
                                       fontSize: 16,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: langProvider.translate('enter_email'),
+                                      hintText: langProvider.translate(
+                                        'enter_email',
+                                      ),
                                       hintStyle: TextStyle(
                                         color: Colors.white.withOpacity(0.6),
                                       ),
@@ -190,10 +205,14 @@ class _SignInPageState extends State<SignInPage> {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return langProvider.translate('please_enter_email');
+                                        return langProvider.translate(
+                                          'please_enter_email',
+                                        );
                                       }
                                       if (!value.contains('@')) {
-                                        return langProvider.translate('valid_email');
+                                        return langProvider.translate(
+                                          'valid_email',
+                                        );
                                       }
                                       return null;
                                     },
@@ -202,7 +221,7 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            
+
                             // Password Field
                             _buildGlassContainer(
                               child: Column(
@@ -225,7 +244,9 @@ class _SignInPageState extends State<SignInPage> {
                                       fontSize: 16,
                                     ),
                                     decoration: InputDecoration(
-                                      hintText: langProvider.translate('enter_password'),
+                                      hintText: langProvider.translate(
+                                        'enter_password',
+                                      ),
                                       hintStyle: TextStyle(
                                         color: Colors.white.withOpacity(0.6),
                                       ),
@@ -236,7 +257,8 @@ class _SignInPageState extends State<SignInPage> {
                                       suffixIcon: IconButton(
                                         onPressed: () {
                                           setState(() {
-                                            _obscurePassword = !_obscurePassword;
+                                            _obscurePassword =
+                                                !_obscurePassword;
                                           });
                                         },
                                         icon: Icon(
@@ -270,10 +292,14 @@ class _SignInPageState extends State<SignInPage> {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return langProvider.translate('please_enter_password');
+                                        return langProvider.translate(
+                                          'please_enter_password',
+                                        );
                                       }
                                       if (value.length < 6) {
-                                        return langProvider.translate('password_length');
+                                        return langProvider.translate(
+                                          'password_length',
+                                        );
                                       }
                                       return null;
                                     },
@@ -282,7 +308,7 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            
+
                             // Forgot Password
                             Align(
                               alignment: Alignment.centerRight,
@@ -300,17 +326,17 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            
+
                             // Sign In Button
                             _buildGlassButton(
                               onPressed: _isLoading ? null : _signIn,
-                              label: _isLoading 
+                              label: _isLoading
                                   ? langProvider.translate('signing_in')
                                   : langProvider.translate('sign_in'),
                               isPrimary: true,
                             ),
                             const SizedBox(height: 32),
-                            
+
                             // Divider
                             Row(
                               children: [
@@ -321,7 +347,9 @@ class _SignInPageState extends State<SignInPage> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                   child: Text(
                                     langProvider.translate('or'),
                                     style: TextStyle(
@@ -339,7 +367,7 @@ class _SignInPageState extends State<SignInPage> {
                               ],
                             ),
                             const SizedBox(height: 32),
-                            
+
                             // Create Account
                             Center(
                               child: Row(
@@ -396,10 +424,7 @@ class _SignInPageState extends State<SignInPage> {
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.2),
-            width: 1.5,
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -430,10 +455,7 @@ class _SignInPageState extends State<SignInPage> {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1.5,
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),

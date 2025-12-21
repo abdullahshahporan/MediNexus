@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'config/supabase_config.dart';
 import 'core/theme/app_theme.dart';
+import 'intro_screen.dart';
 import 'models/models.dart';
 import 'pages/doctor/doctor_dashboard_page.dart';
 import 'pages/intro_page.dart';
@@ -71,10 +73,10 @@ class MediNexusApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            home: SplashScreen(
-              nextScreen: const AppInitializer(),
-            ),
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home: SplashScreen(nextScreen: const AppInitializer()),
           );
         },
       ),
@@ -91,8 +93,38 @@ class AppInitializer extends StatefulWidget {
 }
 
 class _AppInitializerState extends State<AppInitializer> {
+  bool _isLoading = true;
+  bool _showOnboarding = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstLaunch();
+  }
+
+  Future<void> _checkFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isOnboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+
+    setState(() {
+      _showOnboarding = !isOnboardingComplete;
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      // Show a loading indicator while checking preferences
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // Show onboarding if it's the first launch
+    if (_showOnboarding) {
+      return const IntroductionScreen();
+    }
+
+    // Otherwise, check authentication and show appropriate screen
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         if (authProvider.isAuthenticated) {
