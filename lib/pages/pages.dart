@@ -6,7 +6,9 @@ export 'auth/auth.dart';
 // Feature Pages
 export 'chat/chat.dart';
 export 'doctor/doctor_dashboard_page.dart';
-export 'doctor/doctor_login_page.dart';
+export 'doctor/doctor_login_number.dart';
+export 'doctor/doctor_login_otp_screen.dart';
+export 'doctor/doctor_login_face_detection_screen.dart';
 export 'doctor/patient_detail_page.dart';
 export 'doctor/tabs/collab_tab.dart';
 export 'doctor/tabs/tools_tab.dart';
