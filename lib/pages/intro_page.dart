@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/language_provider.dart';
 import '../utils/page_transitions.dart';
-import 'doctor/doctor_login_page.dart';
+import 'doctor/doctor_login_number.dart';
 import 'sign_in_page.dart';
 
 class IntroPage extends StatefulWidget {
@@ -177,7 +177,7 @@ class _IntroPageState extends State<IntroPage> {
           Navigator.push(
             context,
             SlideRightRoute(
-              page: const DoctorLoginPage(),
+              page: const DoctorLoginNumber(),
             ),
           );
         } else {
